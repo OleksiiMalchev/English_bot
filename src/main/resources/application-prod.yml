@@ -1,0 +1,13 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: jdbc:mysql://${DB_URL_PROD}?serverTimezone=Europe/Kiev&useSSL=true
+    username: ${DB_USERNAME_PROD}
+    password: ${DB_PASSWORD_PROD}
+
+  bot:
+    name: ${BOT_NAME_PROD:English5000WordsBot}
+    token: ${BOT_TOKEN_PROD}

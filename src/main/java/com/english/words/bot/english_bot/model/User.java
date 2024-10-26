@@ -10,10 +10,10 @@ public class User {
     private Long id;
     private Long chatId;
     private int frequency;
-    private String preference;
+    private String preference = "words";
     private long lastSentTime;
     @Column(name = "active")
-    private boolean isActive;
+    private boolean isActive = true;
 
 
 

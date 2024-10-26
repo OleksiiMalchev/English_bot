@@ -4,7 +4,7 @@ spring:
       on-profile: dev
 
   datasource:
-    url: jdbc:mysql://localhost:3306/english5000word_dev?serverTimezone=Europe/Kiev&useSSL=false
+    url: jdbc:mysql://localhost:3306/english5000word_dev?allowPublicKeyRetrieval=true&serverTimezone=Europe/Kiev&useSSL=false
     username: root
     password: root
 

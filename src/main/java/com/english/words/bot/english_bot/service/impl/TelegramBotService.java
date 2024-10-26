@@ -34,12 +34,15 @@ public class TelegramBotService extends TelegramLongPollingBot {
     private UserRepository userRepository;
     @Autowired
     private GrammarRulesRepository grammarRulesRepository;
+    @Autowired
+    private UserService userService;
 
     public TelegramBotService(BotConfig botConfig) {
         this.botConfig = botConfig;
         List<BotCommand> listOfCommands = new ArrayList<>();
-        listOfCommands.add(new BotCommand("/start", "get welcome message"));
-        listOfCommands.add(new BotCommand("/word", "show word"));
+        listOfCommands.add(new BotCommand("/start", "Registration"));
+        listOfCommands.add(new BotCommand("/delete", "Delete your data"));
+        listOfCommands.add(new BotCommand("/stop", "Stop studying"));
         try {
             this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
         } catch (TelegramApiException e) {
@@ -66,9 +69,13 @@ public class TelegramBotService extends TelegramLongPollingBot {
             switch (messageText) {
                 case "/start":
                     registerUser(update.getMessage());
-                    startCommandReceived(chatId, update.getMessage().getChat().getFirstName());
-                    // Показать меню выбора между Words и Grammar Rules
                     sendStudyOptionMenu(chatId, "Выберите, что вы хотите изучать:");
+                    break;
+                case "/delete":
+                    deleteUserData(chatId);
+                    break;
+                case "/stop":
+                    stopStudying(chatId);
                     break;
                 case "Words":
                     saveUserPreference(chatId, "words");
@@ -109,9 +116,25 @@ public class TelegramBotService extends TelegramLongPollingBot {
         }
     }
 
-    private void startCommandReceived(long chatId, String name) {
-        String answer = "Hi, " + name + "! Добро пожаловать в English5000WordsBot.";
-        sendMessage(chatId, answer);
+    private void deleteUserData(long chatId) {
+        Optional<User> userOptional = userRepository.findByChatId(chatId);
+        if (userOptional.isPresent()) {
+            userRepository.delete(userOptional.get());
+            sendMessage(chatId, "Ваши данные успешно удалены.");
+        } else {
+            sendMessage(chatId, "Ваши данные не найдены.");
+        }
+    }
+    private void stopStudying(long chatId) {
+        Optional<User> userOptional = userRepository.findByChatId(chatId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setActive(false);
+            userRepository.save(user);
+            sendMessage(chatId, "Изучение остановлено.");
+        } else {
+            sendMessage(chatId, "Ваши данные не найдены.");
+        }
     }
     private void sendStudyOptionMenu(long chatId, String textToSend) {
         SendMessage message = new SendMessage();
@@ -237,10 +260,23 @@ public class TelegramBotService extends TelegramLongPollingBot {
     private void registerUser(Message msg) {
         Optional<User> byChatId = userRepository.findByChatId(msg.getChatId());
         if (byChatId.isEmpty()) {
-
-
+           userService.saveUser(msg.getChatId());
+           sendWelcomeMessage(msg.getChatId(), msg.getChat().getFirstName());
+        } else {
+            sendAlreadyRegisteredMessage(msg.getChatId());
         }
     }
+
+    private void sendWelcomeMessage(long chatId, String firstName) {
+        String welcomeMessage = "Привет, " + firstName + "! Добро пожаловать в English5000WordsBot. Вы успешно зарегистрированы!";
+        sendMessage(chatId, welcomeMessage);
+    }
+
+    private void sendAlreadyRegisteredMessage(long chatId) {
+        sendMessage(chatId, "Вы уже зарегистрированы!");
+    }
+
+
 
     private void saveUserPreference(long chatId, String preference) {
         Optional<User> userOptional = userRepository.findByChatId(chatId);

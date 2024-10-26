@@ -35,7 +35,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
     @Autowired
     private GrammarRulesRepository grammarRulesRepository;
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     public TelegramBotService(BotConfig botConfig) {
         this.botConfig = botConfig;
@@ -260,7 +260,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
     private void registerUser(Message msg) {
         Optional<User> byChatId = userRepository.findByChatId(msg.getChatId());
         if (byChatId.isEmpty()) {
-           userService.saveUser(msg.getChatId());
+           userServiceImpl.saveUser(msg.getChatId());
            sendWelcomeMessage(msg.getChatId(), msg.getChat().getFirstName());
         } else {
             sendAlreadyRegisteredMessage(msg.getChatId());

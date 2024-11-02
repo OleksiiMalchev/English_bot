@@ -50,6 +50,7 @@ jobs:
             docker stop english-bot || true
             docker rm english-bot || true
             docker run -d --name english-bot -p 8080:8080 \
+              --restart unless-stopped \
               -e DB_URL_PROD=${{ secrets.DB_URL_PROD }} \
               -e DB_USERNAME_PROD=${{ secrets.DB_USERNAME_PROD }} \
               -e DB_PASSWORD_PROD=${{ secrets.DB_PASSWORD_PROD }} \

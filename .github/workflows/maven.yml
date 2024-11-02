@@ -47,8 +47,6 @@ jobs:
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker pull anselis/english-bot-images:latest
-            docker stop english-bot || true
-            docker rm english-bot || true
             docker run -d --name english-bot -p 8080:8080 \
               --restart unless-stopped \
               -e DB_URL_PROD="${{ secrets.DB_URL_PROD }}" \

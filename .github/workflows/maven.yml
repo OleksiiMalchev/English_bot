@@ -49,6 +49,13 @@ jobs:
             docker pull anselis/english-bot-images:latest
             docker stop english-bot || true
             docker rm english-bot || true
-            docker run -d --name english-bot -p 8080:8080 anselis/english-bot-images:latest
+            docker run -d --name english-bot -p 8080:8080 \
+              -e DB_URL_PROD=${{ secrets.DB_URL_PROD }} \
+              -e DB_USERNAME_PROD=${{ secrets.DB_USERNAME_PROD }} \
+              -e DB_PASSWORD_PROD=${{ secrets.DB_PASSWORD_PROD }} \
+              -e BOT_NAME_PROD=${{ secrets.BOT_NAME_PROD }} \
+              -e BOT_TOKEN_PROD=${{ secrets.BOT_TOKEN_PROD }} \
+              -e SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }} \
+              anselis/english-bot-images:latest
       
 

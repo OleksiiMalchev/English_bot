@@ -45,18 +45,33 @@ jobs:
           username: ${{ secrets.HETZNER_USERNAME }}
           password: ${{ secrets.HETZNER_PASSWORD }}
           script: |
-            scp ./docker-compose.yml ${{ secrets.HETZNER_USERNAME }}@${{ secrets.HETZNER_HOST }}:/home/${{ secrets.HETZNER_USERNAME }}
+            # ???????? ??????? ????? docker-compose.yml ????? ????????????
+            if [ -f "./docker-compose.yml" ]; then
+              scp ./docker-compose.yml ${{ secrets.HETZNER_USERNAME }}@${{ secrets.HETZNER_HOST }}:/home/${{ secrets.HETZNER_USERNAME }}
+            else
+              echo "docker-compose.yml not found!"
+              exit 1
+            fi
+
+            # ???????????? ?????????? ?????????
             export DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
             export DB_USERNAME_PROD=${{ secrets.DB_USERNAME_PROD }}
             export DB_PASSWORD_PROD=${{ secrets.DB_PASSWORD_PROD }}
             export BOT_NAME_PROD=${{ secrets.BOT_NAME_PROD }}
             export BOT_TOKEN_PROD=${{ secrets.BOT_TOKEN_PROD }}
             export SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }}
-            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+            # Docker login
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+            # ????????? ? ?????? ??????? ?? ???????
             cd /home/${{ secrets.HETZNER_USERNAME }}
+
+            # ??????? Docker Compose
             docker-compose pull
             docker-compose down
             docker-compose up -d
+          
           
       
 

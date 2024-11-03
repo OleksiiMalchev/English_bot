@@ -9,5 +9,5 @@ spring:
     password: ${DB_PASSWORD_PROD}
 
   bot:
-    name: ${BOT_NAME_PROD:English5000WordsBot}
+    name: English5000WordsBot
     token: ${BOT_TOKEN_PROD}

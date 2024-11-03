@@ -45,19 +45,18 @@ jobs:
           username: ${{ secrets.HETZNER_USERNAME }}
           password: ${{ secrets.HETZNER_PASSWORD }}
           script: |
+            scp ./docker-compose.yml ${{ secrets.HETZNER_USERNAME }}@${{ secrets.HETZNER_HOST }}:/home/${{ secrets.HETZNER_USERNAME }}
+            export DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
+            export DB_USERNAME_PROD=${{ secrets.DB_USERNAME_PROD }}
+            export DB_PASSWORD_PROD=${{ secrets.DB_PASSWORD_PROD }}
+            export BOT_NAME_PROD=${{ secrets.BOT_NAME_PROD }}
+            export BOT_TOKEN_PROD=${{ secrets.BOT_TOKEN_PROD }}
+            export SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }}
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            docker pull anselis/english-bot-images:latest
-            docker stop english-bot || true
-            docker rm english-bot || true
-            docker run -d --name english-bot -p 8080:8080 \
-              --restart unless-stopped \
-              -e DB_URL_PROD="${{ secrets.DB_URL_PROD }}" \
-              -e DB_USERNAME_PROD="${{ secrets.DB_USERNAME_PROD }}" \
-              -e DB_PASSWORD_PROD="${{ secrets.DB_PASSWORD_PROD }}" \
-              -e BOT_NAME_PROD="${{ secrets.BOT_NAME_PROD }}" \
-              -e BOT_TOKEN_PROD="${{ secrets.BOT_TOKEN_PROD }}" \
-              -e SPRING_PROFILES_ACTIVE="${{ secrets.SPRING_PROFILES_ACTIVE }}" \
-              anselis/english-bot-images:latest
+            cd /home/${{ secrets.HETZNER_USERNAME }}
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d
           
       
 

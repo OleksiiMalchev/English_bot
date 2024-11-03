@@ -8,6 +8,6 @@ spring:
     username: ${DB_USERNAME_PROD}
     password: ${DB_PASSWORD_PROD}
 
-  bot:
-    name: ${BOT_NAME_PROD}
-    token: ${BOT_TOKEN_PROD}
+bot:
+  name: ${BOT_NAME_PROD}
+  token: ${BOT_TOKEN_PROD}

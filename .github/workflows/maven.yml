@@ -45,39 +45,16 @@ jobs:
           username: ${{ secrets.HETZNER_USERNAME }}
           password: ${{ secrets.HETZNER_PASSWORD }}
           script: |
-            # ???????? ??????? ????? docker-compose.yml ????? ????????????
-            if [ -f "./docker-compose.yml" ]; then
-              scp ./docker-compose.yml ${{ secrets.HETZNER_USERNAME }}@${{ secrets.HETZNER_HOST }}:/root/english_bot/
-            else
-              echo "docker-compose.yml not found!"
-              exit 1
-            fi
-
-            # ???????????? ?????????? ?????????
-            export DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
-            export DB_USERNAME_PROD=${{ secrets.DB_USERNAME_PROD }}
-            export DB_PASSWORD_PROD=${{ secrets.DB_PASSWORD_PROD }}
-            export BOT_NAME_PROD=${{ secrets.BOT_NAME_PROD }}
-            export BOT_TOKEN_PROD=${{ secrets.BOT_TOKEN_PROD }}
-            export SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }}
-
-            # Docker login
-            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-            cd /root/english_bot
-
-            # ???????? Docker Compose ????? ????????
-            if ! command -v docker-compose &> /dev/null
-            then
-              echo "Docker Compose ?? ??????????. ??????????, ?????????? ??? ????? ????????."
-              exit 1
-            fi
-
-            # ??????? Docker Compose
-            docker-compose pull
-            docker-compose down
-            docker-compose up -d
-          
-          
-          
-      
-
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker pull anselis/english-bot-images:latest
+            docker stop english-bot || true
+            docker rm english-bot || true
+            docker run -d --name english-bot -p 8080:8080 \
+              --restart unless-stopped \
+              -e DB_URL_PROD="${{ secrets.DB_URL_PROD }}" \
+              -e DB_USERNAME_PROD="${{ secrets.DB_USERNAME_PROD }}" \
+              -e DB_PASSWORD_PROD="${{ secrets.DB_PASSWORD_PROD }}" \
+              -e BOT_NAME_PROD="${{ secrets.BOT_NAME_PROD }}" \
+              -e BOT_TOKEN_PROD="${{ secrets.BOT_TOKEN_PROD }}" \
+              -e SPRING_PROFILES_ACTIVE="${{ secrets.SPRING_PROFILES_ACTIVE }}" \
+              anselis/english-bot-images:latest

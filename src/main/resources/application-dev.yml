@@ -8,5 +8,3 @@ spring:
     username: root
     password: root
 
-  bot:
-    name: English5000WordsBotDev

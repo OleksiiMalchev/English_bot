@@ -231,10 +231,10 @@ public class TelegramBotService extends TelegramLongPollingBot {
     public void sendWord(long chatId) {
         Optional<Word> randomWord = wordRepository.findRandomWord();
         if (randomWord.isPresent()) {
-            String messageText = "Ваше новое слово на сегодня: \n" +
-                    "Слово: " + randomWord.get().getEnglishWord() + "\n" +
-                    "Перевод: " + randomWord.get().getTranslation() + "\n" +
-                    "Транскрипция: " + randomWord.get().getTranscription();
+            String messageText =
+                    randomWord.get().getEnglishWord() + "\n" +
+                    randomWord.get().getTranslation() + "\n" +
+                    randomWord.get().getTranscription();
             sendMessage(chatId, messageText);
         } else {
             sendMessage(chatId, "К сожалению, сегодня нет нового слова.");

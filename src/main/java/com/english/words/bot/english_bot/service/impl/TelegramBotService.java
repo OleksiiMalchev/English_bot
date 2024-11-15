@@ -179,7 +179,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
         keyboardRows.add(row);
 
         row = new KeyboardRow();
-        row.add("Once a day");
+        row.add("✅Once a day");
         keyboardRows.add(row);
 
         keyboardMarkup.setKeyboard(keyboardRows);
